@@ -1,0 +1,35 @@
+---
+title: "Relación complejidad-estabilidad en redes tróficas empíricas"
+author: "Tomás I. Marina & Nate Colbrunn"
+bibliography: "Referencias.bib"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introducción
+
+@May1973
+
+# Materiales y Métodos
+
+```{r map, echo=FALSE}
+
+plot(pressure)
+
+```
+
+# Resultados
+
+```{r cars}
+
+summary(cars)
+
+```
+
+
+# Discusión
+
+# Literatura Citada
