@@ -46,23 +46,81 @@ reg_mod_gral <- all_data %>%
   ggplot(aes(x = Connectance, y = Modularity)) +
   geom_point() +
   geom_smooth(method = "lm") +
-  labs(x = "Complejidad", y = "Estabilidad (Mod)") +
+  labs(x = "Complejidad", y = "Modularidad") +
   theme_classic() +
   theme(axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"))
+        axis.title.y = element_text(size = 16, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 reg_mod_gral
+# Ecuación regresión lineal
+summary(lm(Modularity ~ Connectance, data = all_data))
+
 
 ### QSS ----
 reg_qss_gral <- all_data %>% 
   ggplot(aes(x = Connectance, y = QSS_MEing)) +
   geom_point() +
   scale_y_reverse() +
+  #geom_quantile() +
   geom_smooth(method = "lm") +
-  labs(x = "Complejidad", y = "Estabilidad (QSS)") +
+  labs(x = "Complejidad", y = "Índice QSS") +
   theme_classic() +
   theme(axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"))
+        axis.title.y = element_text(size = 16, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 reg_qss_gral
+# Ecuación regresión lineal
+Qreg_mn <- lm(QSS_MEing ~ Connectance, data = all_data)
+summary(Qreg_mn)
+
+
+# Distribution of QSS
+library(factoextra)
+library(cluster)
+ggplot(all_data, aes(x = QSS_MEing)) + geom_density() + theme_bw()
+ggplot(all_data, aes(x = QSS_MEing)) + geom_histogram(bins=50) + theme_bw()
+
+# Check cluster by QSS
+# Determine and visualize the optimal number of clusters using total within sum of square
+data.scaled <- scale(all_data$QSS_MEing)
+fviz_nbclust(data.scaled, kmeans, method = "wss")
+# Calculate gap statistic based on number of clusters
+gap_stat <- clusGap(data.scaled, FUN = kmeans, nstart = 25,
+                    K.max = 10, B = 500)
+# Plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+# Perform k-means clustering with k = predicted clusters (gap_stat)
+km <- kmeans(data.scaled, centers = 1, nstart = 25)
+# NO CLUSTERING FOUND! #
+
+
+# Regresión por cuantiles
+hist(all_data$QSS_MEing, prob=TRUE, col = "blue", border = "black")
+lines(density(all_data$QSS_MEing))
+
+library(quantreg)
+library(SparseM)
+Qreg90=rq(QSS_MEing ~ Connectance, tau=0.90, data = all_data)
+summary(Qreg90)
+Qreg75=rq(QSS_MEing ~ Connectance, tau=0.75, data = all_data)
+summary(Qreg75)
+Qreg50=rq(QSS_MEing ~ Connectance, tau=0.50, data = all_data)
+summary(Qreg50)
+Qreg10=rq(QSS_MEing ~ Connectance, tau=0.10, data = all_data)
+summary(Qreg10)
+anova(Qreg75, Qreg50)
+anova(Qreg25, Qreg50)
+
+reg_qss_gral + geom_quantile(quantiles = 0.90) + geom_quantile(quantiles = 0.10) +
+  geom_quantile(quantiles = 0.75) + geom_quantile(quantiles = 0.25) + 
+  geom_quantile(quantiles = 0.5, colour = "red")
+
+# Combinar gráficos
+fig_gral <- ggarrange(reg_mod_gral + rremove("x.title"), reg_qss_gral + rremove("x.title"),
+                     ncol = 2)
+annotate_figure(fig_gral, bottom = textGrob("Complejidad", gp = gpar(fontface = "bold", cex = 1.3)))
 
 
 ## Por ecosistema ----
