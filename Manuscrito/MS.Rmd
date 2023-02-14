@@ -1,12 +1,22 @@
 ---
 title: "Relación complejidad-estabilidad en redes tróficas empíricas"
 author: "Tomás I. Marina & Nate Colbrunn"
-bibliography: "Referencias.bib"
-output: word_document
+bibliography: Referencias.bib
+output:
+  pdf_document: default
+  word_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, echo=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Paquetes
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(grid)
+
 ```
 
 # Introducción
@@ -15,17 +25,51 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Materiales y Métodos
 
-```{r map, echo=FALSE}
-
-plot(pressure)
-
-```
 
 # Resultados
 
-```{r cars}
+```{r fig2, echo=FALSE, fig.align='center', fig.width = 6.5, fig.height = 4, fig.cap="Relación entre (A) modularidad e (B) índice QSS con la complejidad (conectividad) en redes tróficas empíricas. Cada punto representa una red trófica. Regresión lineal para modularidad ($y = 0.40 - 1.2x, R^2 = 0.50, p-value < 2.16e-16$) e índice QSS ($y = 3.86 - 4.2x, R^2 < 0.01, p-value = 0.09$)."}
 
-summary(cars)
+# Datos
+load("../Resultados/all_res.rda")
+load("../Data/metadata.rda")
+## Descartar redes c/2 componentes de metadata
+all_meta_ok <- all_meta %>% 
+  filter(!Network %in% c(fw_2_disc)) %>% 
+  dplyr::select(Ecosystem)
+all_data <- cbind(all_res, all_meta_ok) %>% 
+  dplyr::select(Network, Ecosystem, everything())
+
+# Regresión lineal
+## Modularidad
+reg_mod_gral <- all_data %>% 
+  ggplot(aes(x = Connectance, y = Modularity)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Complejidad", y = "Modularidad") +
+  theme_classic() +
+  theme(axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10))
+
+## QSS
+reg_qss_gral <- all_data %>% 
+  ggplot(aes(x = Connectance, y = QSS_MEing)) +
+  geom_point() +
+  scale_y_reverse() +
+  geom_smooth(method = "lm") +
+  labs(x = "Complejidad", y = "Índice QSS") +
+  theme_classic() +
+  theme(axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10))
+
+# Combinar gráficos
+fig_gral <- ggarrange(reg_mod_gral + rremove("x.title"), reg_qss_gral + rremove("x.title"),
+                     ncol = 2, labels = c("A","B"))
+annotate_figure(fig_gral, bottom = textGrob("Complejidad", gp = gpar(fontface = "bold", cex = 1.1)))
 
 ```
 
