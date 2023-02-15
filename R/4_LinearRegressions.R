@@ -7,7 +7,7 @@
 ##
 # Cargar paquetes
 ##
-packages <- c("dplyr", "ggplot2", "ggpubr", "grid", "olsrr")
+packages <- c("dplyr", "ggplot2", "ggpubr", "grid", "olsrr", "ggpmisc")
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
@@ -56,6 +56,25 @@ reg_mod_gral
 # Ecuación regresión lineal
 summary(lm(Modularity ~ Connectance, data = all_data))
 
+#### Regresión por cuantil ----
+
+hist(all_data$Modularity, prob=TRUE, col = "blue", border = "black")
+lines(density(all_data$Modularity))
+
+library(quantreg)
+library(SparseM)
+Mreg75=rq(Modularity ~ Connectance, tau=0.75, data = all_data)
+summary(Mreg75)
+Mreg50=rq(Modularity ~ Connectance, tau=0.50, data = all_data)
+summary(Mreg50)
+Mreg25=rq(Modularity ~ Connectance, tau=0.25, data = all_data)
+summary(Mreg25)
+anova(Mreg75, Mreg50)  # p-value = 0.017 *
+anova(Mreg25, Mreg50)  # p-value = 0.103
+anova(Mreg75, Mreg25)  # p-value = 0.0006 ***
+
+reg_mod_gral + 
+  geom_quantile(quantiles = 0.75) + geom_quantile(quantiles = 0.25)
 
 ### QSS ----
 reg_qss_gral <- all_data %>% 
@@ -75,14 +94,36 @@ reg_qss_gral
 Qreg_mn <- lm(QSS_MEing ~ Connectance, data = all_data)
 summary(Qreg_mn)
 
+#### Regresión por cuantil ----
 
-# Distribution of QSS
+hist(all_data$QSS_MEing, prob=TRUE, col = "blue", border = "black")
+lines(density(all_data$QSS_MEing))
+
+library(quantreg)
+library(SparseM)
+Qreg90=rq(QSS_MEing ~ Connectance, tau=0.90, data = all_data)
+summary(Qreg90)
+Qreg75=rq(QSS_MEing ~ Connectance, tau=0.75, data = all_data)
+summary(Qreg75)
+Qreg50=rq(QSS_MEing ~ Connectance, tau=0.50, data = all_data)
+summary(Qreg50)
+Qreg25=rq(QSS_MEing ~ Connectance, tau=0.25, data = all_data)
+summary(Qreg25)
+Qreg10=rq(QSS_MEing ~ Connectance, tau=0.10, data = all_data)
+summary(Qreg10)
+anova(Qreg75, Qreg50)  # p-value = 0.025 *
+anova(Qreg25, Qreg50)  # p-value = 0.126
+anova(Qreg75, Qreg25)  # p-value = 0.00993 **
+
+reg_qss_gral + 
+  geom_quantile(quantiles = 0.75) + geom_quantile(quantiles = 0.25)
+
+
+# Check cluster by QSS
 library(factoextra)
 library(cluster)
 ggplot(all_data, aes(x = QSS_MEing)) + geom_density() + theme_bw()
 ggplot(all_data, aes(x = QSS_MEing)) + geom_histogram(bins=50) + theme_bw()
-
-# Check cluster by QSS
 # Determine and visualize the optimal number of clusters using total within sum of square
 data.scaled <- scale(all_data$QSS_MEing)
 fviz_nbclust(data.scaled, kmeans, method = "wss")
@@ -95,27 +136,6 @@ fviz_gap_stat(gap_stat)
 km <- kmeans(data.scaled, centers = 1, nstart = 25)
 # NO CLUSTERING FOUND! #
 
-
-# Regresión por cuantiles
-hist(all_data$QSS_MEing, prob=TRUE, col = "blue", border = "black")
-lines(density(all_data$QSS_MEing))
-
-library(quantreg)
-library(SparseM)
-Qreg90=rq(QSS_MEing ~ Connectance, tau=0.90, data = all_data)
-summary(Qreg90)
-Qreg75=rq(QSS_MEing ~ Connectance, tau=0.75, data = all_data)
-summary(Qreg75)
-Qreg50=rq(QSS_MEing ~ Connectance, tau=0.50, data = all_data)
-summary(Qreg50)
-Qreg10=rq(QSS_MEing ~ Connectance, tau=0.10, data = all_data)
-summary(Qreg10)
-anova(Qreg75, Qreg50)
-anova(Qreg25, Qreg50)
-
-reg_qss_gral + geom_quantile(quantiles = 0.90) + geom_quantile(quantiles = 0.10) +
-  geom_quantile(quantiles = 0.75) + geom_quantile(quantiles = 0.25) + 
-  geom_quantile(quantiles = 0.5, colour = "red")
 
 # Combinar gráficos
 fig_gral <- ggarrange(reg_mod_gral + rremove("x.title"), reg_qss_gral + rremove("x.title"),
@@ -132,7 +152,12 @@ cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
 reg_mod_eco <- all_data %>% 
   ggplot(aes(x = Connectance, y = Modularity)) +
   geom_point(aes(color = factor(Ecosystem))) +
-  scale_color_manual(values=cols) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
+           r.accuracy = 0.01,
+           p.accuracy = 0.001,
+           label.x = 0, label.y = 0.5) +
+  stat_regline_equation(aes(label = ..eq.label..), # adds equation
+                        label.x = 0, label.y = 0.52) +
   facet_wrap(~ Ecosystem) +
   labs(x = "Complejidad", y = "Estabilidad (Mod)") +
   geom_smooth(method = "lm", color = "grey25") +
@@ -169,6 +194,12 @@ annotate_figure(fig_mod, left = textGrob("Estabilidad (Mod)", rot = 90, vjust = 
 reg_qss_eco <- all_data %>% 
   ggplot(aes(x = Connectance, y = QSS_MEing)) +
   geom_point(aes(color = factor(Ecosystem))) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
+           r.accuracy = 0.01,
+           p.accuracy = 0.001,
+           label.x = 0, label.y = 0.5) +
+  stat_regline_equation(aes(label = ..eq.label..), # adds equation
+                        label.x = 0, label.y = 0.8) +
   scale_color_manual(values=cols) +
   scale_y_reverse() +
   facet_wrap(~ Ecosystem) +
