@@ -152,7 +152,7 @@ cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
 reg_mod_eco <- all_data %>% 
   ggplot(aes(x = Connectance, y = Modularity)) +
   geom_point(aes(color = factor(Ecosystem))) +
-  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
+  stat_cor(aes(label = paste(after_stat(rr.label), ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
            r.accuracy = 0.01,
            p.accuracy = 0.001,
            label.x = 0, label.y = 0.5) +
@@ -194,7 +194,7 @@ annotate_figure(fig_mod, left = textGrob("Estabilidad (Mod)", rot = 90, vjust = 
 reg_qss_eco <- all_data %>% 
   ggplot(aes(x = Connectance, y = QSS_MEing)) +
   geom_point(aes(color = factor(Ecosystem))) +
-  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
+  stat_cor(aes(label = paste(after_stat(rr.label), ..p.label.., sep = "~`,`~")), # adds R^2 and p-value
            r.accuracy = 0.01,
            p.accuracy = 0.001,
            label.x = 0, label.y = 0.5) +
