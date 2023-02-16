@@ -1,7 +1,10 @@
 ---
-title: "Relación complejidad-estabilidad en redes tróficas empíricas"
+title: "La estabilidad y la relación complejidad-estabilidad en redes tróficas empíricas es diferente según el ecosistema"
 author: "Tomás I. Marina & Nate Colbrunn"
 bibliography: Referencias.bib
+header-includes:
+  - \usepackage[left]{lineno}
+  - \linenumbers
 output:
   pdf_document: default
   word_document: default
@@ -35,7 +38,7 @@ De acuerdo a los metadatos provistos por los repositorios, clasificamos las rede
 
 La base de datos está compuesta por 314 redes tróficas empíricas, que varían de 10 a 521 en el número de especies y de 16 a 15821 en el número de interacciones, y que pertenecen a ecosistemas dulceacuícolas (n = 81), marinos (n = 160) y terrestres (n = 73) (Figura 1).
 
-```{r fig1, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=5, fig.cap="Ubicación geográfica de las redes tróficas empíricas analizadas y tipo de ecosistema al que pertenecen (dulceacuícola = 81, marino = 160, terrestre = 73)."}
+```{r fig1, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=4.5, fig.cap="Ubicación geográfica de las redes tróficas empíricas analizadas y tipo de ecosistema al que pertenecen (dulceacuícola = 81, marino = 160, terrestre = 73)."}
 
 # Datos
 load("../Resultados/all_res.rda")
@@ -65,9 +68,9 @@ ggplot() +
 
 ```
 
-## Análisis de complejidad y estabilidad
+## Propiedades de complejidad y estabilidad
 
-Existen diferentes propiedades que caracterizan la complejidad de una red trófica. Éstas son: el númmero de especies ($S$), el número de interacciones ($L$), la densidad de interacciones ($L/S$) y la conectividad ($L/S^2$) [@Martinez1992]. En este trabajo consideramos la conectividad como propiedad resumen de la complejidad, porque tiene en cuenta ambos componentes de una red, las especies y sus interacciones, y revela la proporción de interacciones reales con respecto a las posibles la cantidad de interacciones [@Dunne2002a].
+Existen diferentes propiedades que caracterizan la complejidad de una red trófica. Éstas son: el número de especies ($S$), el número de interacciones ($L$), la densidad de interacciones ($L/S$) y la conectividad ($L/S^2$) [@Martinez1992]. En este trabajo consideramos la conectividad como propiedad resumen de la complejidad, porque tiene en cuenta ambos componentes de una red, las especies y sus interacciones, y revela la proporción de interacciones reales con respecto a las posibles la cantidad de interacciones [@Dunne2002a].
 
 Para analizar la estabilidad de las redes tróficas tuvimos en cuenta dos propiedades: 1) modularidad y 2) índice 'Quasi-Sign Stability'. La modularidad es una medida indirecta de la estabilidad. Caracteriza la fuerza, en cantidad de interacciones, con la que ciertas especies se conectan entre sí formando grupos (módulos) con respecto a especies de otros grupos. Redes más modulares son más estables, ya que los módulos previenen la dispersión de perturbaciones a lo largo de la red [@Stouffer2011; @Grilli2016]. Se calcula como la diferencia entre las interacciones reales y las esperadas dentro de los módulos dividida por el número total de interacciones. Usamos el algoritmo estocástico llamado recocido simulado o 'simulated annealing' [@Guimera2005], que asume que las especies de un mismo módulo tienen más interacciones de las que se esperarían en una red aleatoria. Los módulos se obtienen dividiendo todas las especies de la red para maximizar la modularidad. De esta forma, la ecuación para calcular la modularidad se define como:
 
@@ -78,13 +81,22 @@ donde $s$ es el número total de módulos, $I_s$ es el número de interacciones 
 
 El índice 'Quasi-Sign Stability' (QSS) es una medida directa de la estabilidad que revela la amplificación de pequeñas perturbaciones cerca del punto de equilibrio [@Allesina2008]. Se estima como la proporción de matrices comunitarias, o matriz jacobiana, localmente estables. Para ello se simulan matrices aleatorias de la red a analizar manteniendo el signo de la interacción, en este caso positivo para el depredador y negativo para la presa, y se calcula el promedio de los máximos autovalores negativos de la matriz. Cuanto más negativo o más cercano a cero es el autovalor, mayor es la probabilidad de que la red trófica sea estable. Realizamos 1000 simulaciones para cada red analizada.
 
-Realizamos los análisis con el software libre R [@RCoreTeam2022] utilizando los siguientes paquetes: igraph [@Csardi2006] y multiweb [@Saravia2022a]. La base de datos y el código desarrollado para el análisis de los datos se encuentra en https://github.com/TomasMarina/Estabilidad-Complejidad.
+## Análisis complejidad y estabilidad
+
+Con el objetivo de evaluar posibles diferencias en la modularidad y el índice QSS según el tipo de ecosistema, realizamos la prueba no paramétrica de Kruskal-Wallis y, en el caso de encontrar diferencias significativas, post hoc comparasiones pareadas mediante la prueba de Wilcoxon [@Dodge2008].
+
+Para estudiar la relación entre complejidad y las propiedades de estabilidad descriptas anteriormente, realizamos análisis de regresión lineal generales y por tipo de ecosistema. Cuando la dispersión de los datos de la variable dependiente era amplia, hicimos regresión por cuantiles (25, 50 y 75) y evaluamos posibles diferencias significativas mediante un análisis de la varianza [@Wilkinson1973].
+
+Todos los análisis los llevamos a cabo con el software libre R [@RCoreTeam2022] utilizando principalmente los siguientes paquetes: stats [@RCoreTeam2022], dplyr [@Wickham2022], igraph [@Csardi2006] y multiweb [@Saravia2022a]. La base de datos y el código desarrollado para el análisis de los datos se encuentra en https://github.com/TomasMarina/Estabilidad-Complejidad.
+
 
 # Resultados
 
-Descripción de resultados.
+## Estabilidad según el tipo de ecosistema
 
-```{r fig2, echo=FALSE, fig.align='center', fig.width = 6.5, fig.height = 4, fig.cap="Relación entre (A) modularidad e (B) índice QSS con la complejidad (conectividad) en redes tróficas empíricas. Cada punto representa una red trófica. Regresión lineal para modularidad ($y = 0.40 - 1.2x, R^2 = 0.50, p-value < 2.16e-16$) e índice QSS ($y = 3.86 - 4.2x, R^2 < 0.01, p-value = 0.09$). En (B) se muestran regresiones de cuantiles 25 y 75."}
+Encontramos diferencias en las propiedades de estabilidad analizadas de acuerdo al tipo de ecosistema (Figura 2). En el caso de la modularidad, la prueba de Kruskal-Wallis mostró diferencias significativas (${\chi}^2$ = 37.41, $p$ < 0.001) y la prueba pareada de Wilcoxon determinó diferencias entre redes tróficas dulceacuícolas y marinas ($p$ = 0.02), y entre marinas y terrestres ($p$ < 0.001). En el caso del índice QSS, la prueba de Kruskal-Wallis mostró diferencias significativas (${\chi}^2$ = 96.55, $p$ < 0.001) y la prueba pareada de Wilcoxon determinó diferencias entre redes tróficas dulceacuícolas y terrestres ($p$ < 0.001), y entre marinas y terrestres ($p$ < 0.001).
+
+```{r fig2, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Modularidad e índice QSS según el tipo de ecosistema. Cada punto representa una red trófica. En el diagrama de cajas y bigotes, la altura de la caja representa el intercuartil 25-75, la línea horizontal la mediana y las líneas verticales superior e inferior los percentiles 95 y 5, respectivamente."}
 
 # Datos
 load("../Resultados/all_res.rda")
@@ -95,6 +107,54 @@ all_meta_ok <- all_meta %>%
   dplyr::select(Ecosystem)
 all_data <- cbind(all_res, all_meta_ok) %>% 
   dplyr::select(Network, Ecosystem, everything())
+
+cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
+
+## Modularidad
+bx_mod_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = Modularity)) +
+  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
+  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
+  scale_fill_manual(values=cols) +
+  scale_color_manual(values=cols) +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Modularidad") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+## QSS
+bx_qss_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = QSS_MEing)) +
+  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
+  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
+  scale_fill_manual(values=cols) +
+  scale_color_manual(values=cols) +
+  scale_y_reverse() +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Índice QSS") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+# Figura
+fig_box <- ggarrange(bx_mod_eco + rremove("x.title"), bx_qss_eco + rremove("x.title"),
+          nrow = 2)
+annotate_figure(fig_box, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
+
+```
+
+## Relación complejidad-estabilidad
+
+La relación complejidad-modularidad fue negativa en general.
+
+La relación complejidad-índice QSS fue positiva en general, es decir con respecto a la media del índice QSS. Sin embargo, debido a la dispersión de los datos, realizamos regresiones por cuantiles 25 y 75.
+
+```{r fig3, echo=FALSE, fig.align='center', fig.width = 6.5, fig.height = 4, fig.cap="Relación entre complejidad y (A) modularidad e (B) índice QSS en redes tróficas empíricas. Cada punto representa una red trófica. Regresión lineal para modularidad ($y = 0.40 - 1.2x, R^2 = 0.50, p-value < 2.16e-16$) e índice QSS ($y = 3.86 - 4.2x, R^2 < 0.01, p-value = 0.09$). En (B) la relación complejidad-QSS se muestran las regresiones de cuantiles 25 y 75."}
 
 # Regresión lineal
 ## Modularidad
@@ -132,9 +192,7 @@ annotate_figure(fig_2, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
 ```
 
 
-```{r fig3, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Relación modularidad-complejidad (panel superior) y distribución de los datos de modularidad y complejidad (panel inferior) en redes tróficas empíricas de ecosistemas dulceacuícolas, marinos y terrestres. Regresión lineal para redes dulceacuícolas ($y = 0.40 - 1.27x, R^2 = 0.44, p-value < 0.001$), marinas ($y = 0.38 - 1.13x, R^2 = 0.52, p-value < 0.001$) y terrestres ($y = 0.38 - 0.88x, R^2 = 0.24, p-value < 0.001$)."}
-
-cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
+```{r fig4, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Relación complejidad-modularidad (panel superior) y complejidad-índice QSS (panel inferior) en redes tróficas empíricas según el tipo de ecosistema. Regresión lineal para redes dulceacuícolas (modularidad: $y = 0.4 - 1.3x, R^2 = 0.44, p-value < 0.001$; QSS: $y = - 0.13 - 18x, R^2 = 0.32, p-value < 0.001$), marinas (modularidad: $y = 0.38 - 1.1x, R^2 = 0.52, p-value < 0.001$; QSS: $y = - 3.5 - 6.8x, R^2 = 0.06, p-value < 0.002$) y terrestres (modularidad: $0.38 - 0.88x, R^2 = 0.24, p-value < 0.001$; QSS: $y = - 5.7 - 3x, R^2 < 0.01, p-value < 0.799$)."}
 
 ## Modularidad
 reg_mod_eco <- all_data %>% 
@@ -142,38 +200,13 @@ reg_mod_eco <- all_data %>%
   geom_point(aes(color = factor(Ecosystem))) +
   scale_color_manual(values=cols) +
   facet_wrap(~ Ecosystem) +
-  labs(x = "Complejidad", y = "Estabilidad (Mod)") +
+  labs(x = "Complejidad", y = "Modularidad") +
   geom_smooth(method = "lm", color = "grey25") +
   theme_bw() +
   theme(panel.grid = element_blank(),
         axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
         legend.position = "none")
-
-bx_mod_eco <- all_data %>% 
-  ggplot(aes(x = Connectance, y = Modularity)) +
-  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
-  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
-  scale_fill_manual(values=cols) +
-  scale_color_manual(values=cols) +
-  facet_wrap(~ Ecosystem) +
-  labs(x = "Complejidad", y = "Estabilidad (Mod)") +
-  theme_bw() +
-  theme(panel.grid = element_blank(),
-        axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"),
-        legend.position = "none")
-
-# Figura
-fig_mod <- ggarrange(reg_mod_eco + rremove("x.title") + rremove("y.title"), bx_mod_eco + rremove("y.title") +rremove("x.title"),
-          nrow = 2)
-annotate_figure(fig_mod, left = textGrob("Modularidad", rot = 90, vjust = 1, gp = gpar(cex = 1.1)),
-                bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
-
-```
-
-
-```{r fig4, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Relación índice QSS-complejidad (panel superior) y distribución de los datos del índice QSS y complejidad (panel inferior) en redes tróficas empíricas de ecosistemas dulceacuícolas, marinos y terrestres. Regresión lineal para redes dulceacuícolas ($y = - 0.13 - 18x, R^2 = 0.32, p-value < 0.001$), marinas ($y = - 3.5 - 6.8x, R^2 = 0.06, p-value < 0.002$) y terrestres ($y = - 5.7 - 3x, R^2 < 0.01, p-value < 0.799$)."}
 
 ## QSS
 reg_qss_eco <- all_data %>% 
@@ -182,34 +215,18 @@ reg_qss_eco <- all_data %>%
   scale_color_manual(values=cols) +
   scale_y_reverse() +
   facet_wrap(~ Ecosystem) +
-  labs(x = "Complejidad", y = "Estabilidad (QSS)") +
+  labs(x = "Complejidad", y = "Índice QSS") +
   geom_smooth(method = "lm", color = "grey25") +
   theme_bw() +
   theme(panel.grid = element_blank(),
         axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"),
-        legend.position = "none")
-
-bx_qss_eco <- all_data %>% 
-  ggplot(aes(x = Connectance, y = QSS_MEing)) +
-  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
-  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
-  scale_fill_manual(values=cols) +
-  scale_color_manual(values=cols) +
-  scale_y_reverse() +
-  facet_wrap(~ Ecosystem) +
-  labs(x = "Complejidad", y = "Estabilidad (QSS)") +
-  theme_bw() +
-  theme(panel.grid = element_blank(),
-        axis.title.x = element_text(face = "bold"),
-        axis.title.y = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
         legend.position = "none")
 
 # Figura
-fig_qss <- ggarrange(reg_qss_eco + rremove("x.title") + rremove("y.title"), bx_qss_eco + rremove("y.title") + rremove("x.title"),
+fig_qss <- ggarrange(reg_mod_eco + rremove("x.title"), reg_qss_eco + rremove("x.title"),
                      nrow = 2)
-annotate_figure(fig_qss, left = textGrob("Índice QSS", rot = 90, vjust = 1, gp = gpar(cex = 1.1)),
-                bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
+annotate_figure(fig_qss, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
 
 ```
 
