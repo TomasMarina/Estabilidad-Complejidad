@@ -8,7 +8,7 @@
 ##
 # Cargar paquetes
 ##
-packages <- c("dplyr", "ggplot2", "interactions")
+packages <- c("dplyr", "ggplot2", "interactions", "agricolae")
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
@@ -87,6 +87,14 @@ interact_plot(mod.lm.interact, pred = Connectance, modx = Ecosystem, plot.points
   theme_classic()
 
 
+##### Pairwise compare ----
+library(emmeans)
+m <- lm(Modularity ~ Ecosystem * Connectance, all_data)
+emtrends(m, pairwise ~ Ecosystem, var="Connectance", infer=c(TRUE,TRUE))
+emmip(m, Ecosystem ~ Connectance, cov.reduce = range)
+# No hay diferencia en las tendencias de las pendientes
+
+
 ### QSS ----
 ##### Test intercept ----
 
@@ -131,5 +139,8 @@ interact_plot(qss.lm.interact, pred = Connectance, modx = Ecosystem, plot.points
   theme_classic()
 
 
-
-
+##### Pairwise compare ----
+q <- lm(QSS_MEing ~ Ecosystem * Connectance, all_data)
+emtrends(q, pairwise ~ Ecosystem, var="Connectance", infer=c(TRUE,TRUE))
+emmip(q, Ecosystem ~ Connectance, cov.reduce = range)
+# No hay diferencia en las tendencias de las pendientes
