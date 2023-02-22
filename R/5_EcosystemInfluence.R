@@ -8,7 +8,7 @@
 ##
 # Cargar paquetes
 ##
-packages <- c("dplyr", "ggplot2", "interactions", "agricolae")
+packages <- c("dplyr", "ggplot2", "interactions", "agricolae", "emmeans")
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
@@ -88,7 +88,6 @@ interact_plot(mod.lm.interact, pred = Connectance, modx = Ecosystem, plot.points
 
 
 ##### Pairwise compare ----
-library(emmeans)
 m <- lm(Modularity ~ Ecosystem * Connectance, all_data)
 emtrends(m, pairwise ~ Ecosystem, var="Connectance", infer=c(TRUE,TRUE))
 emmip(m, Ecosystem ~ Connectance, cov.reduce = range)
