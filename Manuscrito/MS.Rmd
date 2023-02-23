@@ -1,6 +1,6 @@
 ---
 title: "La estabilidad y la relación complejidad-estabilidad en redes tróficas empíricas varían según el tipo ecosistema"
-author: "Tomás I. Marina & Nate Colbrunn"
+author: "Tomás I. Marina & Nathan Colbrunn"
 bibliography: Referencias.bib
 csl: "apa.csl"
 header-includes:
@@ -25,9 +25,33 @@ library(tidyverse)
 
 ```
 
+### Autoría
+TIM: https://orcid.org/0000-0002-9203-7411. Centro Austral de Investigaciones Científicas (CADIC-CONICET), Ushuaia, Argentina. tomasimarina@gmail.com
+
+NC:
+
+### Contribución de cada autor
+TIM: Conceptualización, análisis formal, administración del proyecto, supervisión, escritura del manuscrito original, revisión y edición.
+NC: Curación de los datos, análisis formal, investigación.
+
+### Declaración de financiamiento
+No hubo un financiamiento específico para el desarrollo de la investigación.
+
+### Evaluadores
+Marco Ortiz. Laboratorio de Modelamiento de Sistemas Ecológicos Complejos (LAMSEC), Instituto Antofagasta (IA), Universidad de Antofagasta, Antofagasta, Chile. marco.ortiz@uantof.cl
+
+Andrés F. Navia. Fundación colombiana para la investigación y conservación de tiburones y rayas - SQUALUS, Cali, Colombia. anavia@squalus.org
+
+Jimmy Argüelles-Jiménez. Instituto de Ciencias Marinas y Pesquerías, Universidad Veracruzana, Veracruz, Mexico. cayix24@gmail.com
+
 # Resumen
 
-Escribir resumen acá.
+Palabras clave:
+
+# Abstract
+
+Keywords:
+
 
 \newpage
 # Introducción
@@ -256,20 +280,21 @@ annotate_figure(fig_qss, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
 \newpage
 # Discusión
 
+La búsqueda de similitudes y diferencias entre ecosistemas ha dado lugar al conocimiento de algunos de los más informativos patrones y procesos de la ecología [@Shurin2005]. Sin embargo, es a partir de las últimas décadas donde comparasiones directas y cuantitativas se han empezado a realizar como consecuencia de la disponibilidad de grandes bases de datos [@Allesina2008; @Marina2018a; @Brose2019]. En este trabajo describimos, por primera vez, la multidimensionalidad de la estabilidad y la relación complejidad-estabilidad utilizando una base de datos de más de 300 redes tróficas empíricas cubriendo un rango amplio de complejidad en distintos tipos de ecosistemas.
+
 ## Estabilidad
 
-En este trabajo describimos, por primera vez, la multidimensionalidad de la estabilidad utilizando una base de datos de más de 300 redes tróficas empíricas cubriendo un rango amplio de complejidad en distintos tipos de ecosistemas. Los resultados muestran diferencias importantes en la estabilidad de las redes según el ecosistema. En este sentido, las redes tróficas terrestres y las marinas presentan diferencias significativas considerando indicadores indirectos (modularidad) y directos de estabilidad (índice QSS).
+Nuestros resultados muestran que la estabilidad de las redes tróficas varía según el ecosistema. Las redes tróficas terrestres y marinas son distintas considerando no solo indicadores indirectos (modularidad) sino también directos de estabilidad (índice QSS). En este sentido, sugerimos que existen diferencias importantes entre las redes acuáticas en general (dulceacuícola + marina) y las terrestres. Es probable que la explicación tenga que ver con contrastes en procesos biológicos y ecológicos, como la tasa de crecimiento de los productores primarios [@Cebrian2004], la incidencia de características de las especies (tamaño corporal) en las interacciones presa-depredador [@Yodzis1992] y el flujo de energía [@Nowlin2008].
 
-
-ambos indicadores de estabilidad, directos e indirectos, sugieren que las redes tróficas terrestres y las marinas presentan diferencias en su 
-
-Diferencias en indicadores directos e indirectos de estabilidad según tipo de ecosistema.
-Modularidad diferente entre dulceacuícola y marina, y entre terrestre y marina.
-QSS diferente entre dulceacuícola y terrestre, y entre terrestre y marina.
-
+El acoplamiento de hábitats y el subsidio de energía diferencial podrían explicar que las redes tróficas acuáticas sean relativamente más estables (índice QSS más cercano a cero) que las terrestres. En general, los ecosistemas acuáticos reciben más subdsidios de recursos alóctonos (tanto orgánicos como inorgánicos) que los terrestres [@Pace2004; @Rodriguez-Florez2023]. En particular la materia orgánica o detrito sustenta altos niveles de producción secundaria, generando así una comunidad diversa de especies detritívoras. Se sugiere que estas especies acumulan menos biomasa y son más eficientes en el reciclado de materia en los ecosistemas acuáticos que en los terrestres [@Cebrian2004a; @Cebrian2004]. Estas diferencias en la estructura y funcionamiento trófico sustentarían redes tróficas acuáticas más estables en comparasión con las terrestres.
 
 ## Relación complejidad-estabilidad
 
+Este trabajo muestra que la relación complejidad-estabilidad varía de acuerdo al indicador de estabilidad considerado y según el tipo de ecosistema evaluado.
+
+El debate complejidad-estabilidad en redes tróficas, que se originó a partir del trabajo de @May1973, ha generado una vasta cantidad de trabajos de investigación teóricos y empíricos. Existen tantas investigaciones que sugieren una relación negativa entre complejidad y estabilidad, así como una relación positiva (ver tabla 4 en @Landi2018a). Esto se basa en la diversidad de indicadores de complejidad utilizados (e.g. número de especies, conectividad), pero mucho más en los referidos a la estabilidad debido a su naturaleza multidimensional [@Donohue2016; @Dominguez-Garcia2019]. Nuestros resultados no escapan a esta realidad, ya que describen una relación claramente negativa entre complejidad y estabilidad al considerar la modularidad como indicador, y relaciones positivas y uniformes con respecto al índice QSS.
+
+Redes tróficas grandes (Sy L altos) tienen C bajos, muchos generalistas, entonces baja modularidad.
 
 
 Diferencias en la relación complejidad-estabilidad según indicador de estabilidad.
@@ -281,10 +306,16 @@ Variación según tipo de ecosistema para índice QSS: negativa para dulceacuíc
 
 
 
-
+# Conclusiones
 
 Sugerimos incluir indicadores directos e indirectos para evaluar la estabilidad de redes tróficas.
 Sugerimos considerar el tipo de ecosistema para evaluar la estabilidad y la relación complejidad-estabilidad.
+
+
+# Agradecimientos
+
+SIT
+Conicet
 
 
 \newpage
