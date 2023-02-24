@@ -7,8 +7,8 @@ header-includes:
   - \usepackage[left]{lineno}
   - \linenumbers
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -28,7 +28,7 @@ library(tidyverse)
 ### Autoría
 TIM: https://orcid.org/0000-0002-9203-7411. Centro Austral de Investigaciones Científicas (CADIC-CONICET), Ushuaia, Argentina. tomasimarina@gmail.com
 
-NC:
+NC: pasante del programa School for International Training (SIT) "People, Environment, and Climate Change in Patagonia and Antarctica". Estudiante de Ciencias de la Computación, Hope College, Michigan, Estados Unidos.
 
 ### Contribución de cada autor
 TIM: Conceptualización, análisis formal, administración del proyecto, supervisión, escritura del manuscrito original, revisión y edición.
