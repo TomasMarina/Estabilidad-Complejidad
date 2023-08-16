@@ -1,0 +1,323 @@
+---
+title: "La estabilidad y la relación complejidad-estabilidad en redes tróficas empíricas varían según el tipo ecosistema"
+author: "Tomás I. Marina & Nathan Colbrunn"
+bibliography: Referencias.bib
+csl: "apa.csl"
+header-includes:
+  - \usepackage[left]{lineno}
+  - \linenumbers
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Paquetes
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(grid)
+library(interactions)
+library(tidyverse)
+library(maps)
+
+```
+
+### Autoría
+TIM: https://orcid.org/0000-0002-9203-7411. Centro Austral de Investigaciones Científicas (CADIC-CONICET), Ushuaia, Argentina. tomasimarina@gmail.com
+
+NC: pasante del programa School for International Training (SIT) "People, Environment, and Climate Change in Patagonia and Antarctica". Estudiante de Ciencias de la Computación, Hope College, Michigan, Estados Unidos.
+
+### Contribución de cada autor
+TIM: Conceptualización, análisis formal, administración del proyecto, supervisión, escritura del manuscrito original, revisión y edición.
+NC: Curación de los datos, análisis formal, investigación.
+
+### Declaración de financiamiento
+No hubo un financiamiento específico para el desarrollo de la investigación.
+
+### Evaluadores
+Marco Ortiz. Laboratorio de Modelamiento de Sistemas Ecológicos Complejos (LAMSEC), Instituto Antofagasta (IA), Universidad de Antofagasta, Antofagasta, Chile. marco.ortiz@uantof.cl
+
+Andrés F. Navia. Fundación colombiana para la investigación y conservación de tiburones y rayas - SQUALUS, Cali, Colombia. anavia@squalus.org
+
+Jimmy Argüelles-Jiménez. Instituto de Ciencias Marinas y Pesquerías, Universidad Veracruzana, Veracruz, Mexico. cayix24@gmail.com
+
+# Resumen
+
+Las redes tróficas describen las interacciones presa-depredador que ocurren en un hábitat determinado. Son herramientas útiles para analizar la complejidad y la estabilidad, así como la relación entre estas propiedades, en ecosistemas naturales. En este trabajo estudiamos la estabilidad, medida mediante la conectividad ($C=L/S^2$, donde S es el número de especies y L el número de interacciones), y la relación complejidad-estabilidad en más de 300 redes tróficas empíricas considerando un rango amplio de complejidad y una variedad de ecosistemas. Para esto consideramos dos indicadores de estabilidad, modularidad y el índice 'Quasi-Sign Stability', que evaluamos de manera general y particularmente para ecosistemas dulceacuícolas, marinos y terrestres. Nuestros resultados muestran diferencias significativas en los indicadores de estabilidad analizados de acuerdo al tipo de ecosistema. Además, la relación complejidad-estabilidad fue diferente no solo de acuerdo al indicador de estabilidad considerado, sino también al tipo de ecosistema. De esta manera, sugerimos que es fundamental considerar la multidimensionalidad de la estabilidad al evaluarla específicamente y en el contexto de la relación complejidad-estabilidad en redes tróficas, al igual que el tipo de ecosistema.
+
+Palabras clave: interacción presa-depredador, modularidad, 'Quasi-Sign Stability', ecosistema dulceacuícola, ecosistema marino, ecosistema terrestre
+
+# Abstract
+
+Food webs describe the predator-prey interactions that occur in a given habitat. They are useful tools for analyzing complexity and stability, as well as the relationship between these properties, in natural ecosystems. In this work we studied stability, measured as connectance ($C=L/S^2$, where S is the number of species and L the number of interactions), and the complexity-stability relationship in more than 300 empirical food webs considering a wide range of complexity and a variety of ecosystems. For this we considered two indicators of stability, modularity and the 'Quasi-Sign Stability' index, which we evaluated generally, and particularly for freshwater, marine and terrestrial ecosystems. Our results show significant differences in the stability indicators analyzed according to the type of ecosystem. In addition, the complexity-stability relationship was different not only according to the stability indicator considered, but also the type of ecosystem. In this sense, we suggest that it is essential to consider the multidimensionality of stability when evaluating it specifically and in the context of the complexity-stability relationship in food webs, as well as the type of ecosystem.
+
+Keywords: prey-predator interactions, modularity, Quasi-Sign Stability, freshwater ecosystem, marine ecosystem, terrestrial ecosystem
+
+
+\newpage
+# Introducción
+
+Los ecosistemas naturales están compuestos por una gran diversidad de especies y sus interacciones. Una forma de abordar esta diversidad es mediante el concepto de red trófica, que describe la red de interacciones ecológicas (presa-depredador) que ocurren con más frecuencia entre especies en un ecosistema [@Pascual2005]. Entender los patrones en la estructura y función de las redes ecológicas a escala local y global es crucial para comprender aspectos fundamentales y aplicados de la ecología y la biogeografía [@Windsor2023]. Particularmente la relación entre la complejidad y la estabilidad de las redes tróficas es de vital importancia para el mantenimiento y la conservación de todos los servicios naturales que brindan los ecosistemas [@Montoya2003a].
+
+El estudio de la complejidad y la estabilidad en redes tróficas utilizando la teoría de redes comenzó en la década de 1970 con el análisis de comunidades terrestres y dulceacuícolas [@May1973; @Cohen1978; @Briand1987]. Durante esta época, R.M. May sugirió, de manera teórica, una relación entre complejidad, analizada mediante la conectividad ($C = L/S^2$ donde $L$ es el número de interacciones y $S$ el número de especies), y estabilidad: a mayor conectividad de la red, menor estabilidad [@May1973]. Así se generó una contradicción entre la persistencia de ecosistemas naturales muy diversos [@Paine1966; @Naeem1997] y la hipótesis de May. Con el advenimiento de redes tróficas empíricas de mayor resolución (i.e. mayor representación de especies biológicas que de grupos funcionales agregados), así como nuevas metodologías para estimar la estabilidad, el debate complejidad-estabilidad tomó relevancia como una línea de investigación en si misma en ecología [@McCann2000; @Allesina2015; @Namba2015; @Jacquet2016; @Mougi2022].
+
+El debate complejidad-estabilidad sigue en discusión en la actualidad, hecho que se sustenta por los resultados contradictorios [@Landi2018a] y, sobre todo, por la multidimensionalidad del concepto de estabilidad [@Donohue2016; @Dominguez-Garcia2019]. El análisis de estabilidad en redes tróficas puede abordarse de manera directa e indirecta. En este último caso, existen ciertas propiedades estructurales de la red que se utilizan como indicadores de estabilidad que describen dimensiones de la misma, como la resistencia ante perturbaciones. La modularidad es uno de ellos e indica cuán fuerte es la cohesión, medida en cantidad de interacciones, entre especies de un mismo módulo o subgrupo de especies con respecto a otros módulos [@Krause2003]. Se espera que redes tróficas más modulares, es decir con mayor cohesión en sus módulos, sean más resistentes a perturbaciones debido a que los módulos actuarían previniendo la dispersión al resto de las especies de la red [@Grilli2016].
+Por otro lado, el índice 'Quasi-Sign Stability' (QSS) es una propiedad que analiza la estabilidad de manera directa. Este índice da cuenta de la estabilidad local de la red revelando la amplificación o no de pequeñas perturbaciones cerca del punto de equilibrio [@Allesina2008], describiendo así la resiliencia de la red.
+
+Recientemente se ha sugerido que una de las maneras para mejorar la comprensión entre complejidad y estabilidad es investigar las relaciones entre estas propiedades a través de diferentes escalas, es decir de local a regional, así como a través de los gradientes de complejidad de la red [@Windsor2023].
+El presente trabajo tiene como objetivo general estudiar la estabilidad y la relación complejidad-estabilidad en redes tróficas empíricas considerando un rango amplio de complejidad y una variedad de ecosistemas. Para esto analizamos dos propiedades de estabilidad, modularidad e índice QSS, que evaluamos de manera general y particularmente para ecosistemas dulceacuícolas, marinos y terrestres.
+
+
+# Materiales y Métodos
+
+## Base de datos
+
+Consideramos dos repositorios públicos de redes tróficas empíricas para construir la base de datos. Dichos repositorios han sido curados y utilizados en diferentes trabajos de investigación [@Marina2018a; @Brose2019; @Perkins2022].
+Uno de los repositorios es 'GATEWAy' (GlobAL daTabasE of traits and food Web Architecture), recopilado por el German Center for Integrative Biodiversity Research (iDiv) [@Brose2018], y contiene información sobre 290 redes tróficas de distintas latitudes y ecosistemas. El otro repositorio está almacenado en el paquete de R ‘multiweb’, y contiene 29 redes tróficas complejas de ecosistemas marinos [@Saravia2022a, https://github.com/lsaravia/multiweb]. Descartamos aquellas redes tróficas que tenían más de un componente, es decir que presentaban grupos de especies tróficas desconectados entre sí.
+De acuerdo a los metadatos provistos por los repositorios, clasificamos las redes de acuerdo al tipo de ecosistema: dulceacuícola, marino o terrestre.
+
+La base de datos está compuesta por 314 redes tróficas empíricas, que varían de 10 a 521 en el número de especies y de 16 a 15821 en el número de interacciones, y que pertenecen a ecosistemas dulceacuícolas (n = 81), marinos (n = 160) y terrestres (n = 73) (Figura 1).
+
+## Propiedades de complejidad y estabilidad
+
+Existen diferentes propiedades que caracterizan la complejidad de una red trófica. Éstas son: el número de especies ($S$), el número de interacciones ($L$), la densidad de interacciones ($L/S$) y la conectividad ($L/S^2$) [@Martinez1992]. En este trabajo consideramos la conectividad como propiedad resumen de la complejidad, porque tiene en cuenta ambos componentes de una red, las especies y sus interacciones, y revela la proporción de interacciones reales con respecto a las posibles la cantidad de interacciones [@Dunne2002a].
+
+Para analizar la estabilidad de las redes tróficas tuvimos en cuenta dos propiedades: 1) modularidad y 2) índice 'Quasi-Sign Stability'. La modularidad es una medida indirecta de la estabilidad. Caracteriza la fuerza, en cantidad de interacciones, con la que ciertas especies se conectan entre sí formando grupos (módulos) con respecto a especies de otros grupos. Redes más modulares son más estables, ya que los módulos previenen la dispersión de perturbaciones a lo largo de la red [@Stouffer2011; @Grilli2016]. Se calcula como la diferencia entre las interacciones reales y las esperadas dentro de los módulos dividida por el número total de interacciones. Usamos el algoritmo estocástico llamado recocido simulado o 'simulated annealing' [@Guimera2005], que asume que las especies de un mismo módulo tienen más interacciones de las que se esperarían en una red aleatoria. Los módulos se obtienen dividiendo todas las especies de la red para maximizar la modularidad. De esta forma, la ecuación para calcular la modularidad se define como:
+
+$$
+Mod = \sum_{s} (\frac{I_s} {L} - (\frac{d_s}{2L})^2)
+$$
+donde $s$ es el número total de módulos, $I_s$ es el número de interacciones entre especies del mismo módulo, $d_s$ es la suma de las interacciones totales de las especies del módulo $s$ y $L$ es el número total de interacciones de la red.
+
+El índice 'Quasi-Sign Stability' (QSS) es una medida directa de la estabilidad que revela la amplificación o no de pequeñas perturbaciones cerca del punto de equilibrio [@Allesina2008]. Para describir la estabilidad local de la red trófica consideramos la parte real del autovalor más grande de las matrices comunitarias o matriz jacobiana. Para ello simulamos matrices aleatorias de la red a analizar manteniendo el signo de la interacción, en este caso positivo para el depredador y negativo para la presa. Cuanto más negativo o cercano a cero sea el autovalor, mayor será la probabilidad de que las perturbaciones no se amplifiquen en la red trófica manteniendo así el equilibrio. Cuanto más positivo o alejado del cero sea el autovalor, mayor será la probabilidad de amplificación de las perturbaciones a lo largo de la red trófica, eventualmente convergiendo a un nuevo régimen ecológico.
+
+## Análisis de complejidad y estabilidad
+
+Con el objetivo de evaluar posibles diferencias en la modularidad y el índice QSS según el tipo de ecosistema, realizamos la prueba no paramétrica de Kruskal-Wallis y, en el caso de encontrar diferencias significativas, post-hoc comparasiones pareadas mediante la prueba de Wilcoxon [@Dodge2008].
+
+Para estudiar la relación entre complejidad y las propiedades de estabilidad descriptas anteriormente, realizamos análisis de regresión lineal (utilizando la media) y regresión por cuantiles. Cuando la dispersión de los datos de la variable dependiente era amplia, hicimos regresión por cuantiles (25, 50 y 75) y evaluamos posibles diferencias significativas mediante un análisis de la varianza [@Wilkinson1973].
+La influencia del tipo de ecosistema en la relación complejidad-estabilidad la evaluamos analizando posibles diferencias significativas en las tendencias lineales de las regresiones lineales mediante una prueba pareada post-hoc [@Lenth2022].
+
+Todos los análisis los llevamos a cabo con el software libre R [@RCoreTeam2022] utilizando principalmente los siguientes paquetes: stats [@RCoreTeam2022], dplyr [@Wickham2022], igraph [@Csardi2006] y multiweb [@Saravia2022a]. La base de datos y el código desarrollado para el análisis de los datos se encuentra en https://github.com/TomasMarina/Estabilidad-Complejidad.
+
+
+# Resultados
+
+## Estabilidad según el tipo de ecosistema
+
+Encontramos diferencias en las propiedades de estabilidad analizadas de acuerdo al tipo de ecosistema (Figura 2).
+
+En el caso de la modularidad, la prueba de Kruskal-Wallis mostró diferencias significativas (${\chi}^2$ = 37.41, $p$ < 0.001) y la prueba pareada de Wilcoxon determinó diferencias entre redes tróficas dulceacuícolas y marinas ($p$ = 0.02), y entre marinas y terrestres ($p$ < 0.001). En el caso del índice QSS, la prueba de Kruskal-Wallis mostró diferencias significativas (${\chi}^2$ = 96.55, $p$ < 0.001) y la prueba pareada de Wilcoxon determinó diferencias entre redes tróficas dulceacuícolas y terrestres ($p$ < 0.001), y entre marinas y terrestres ($p$ < 0.001).
+
+## Relación complejidad-estabilidad
+
+La relación complejidad-estabilidad en las redes tróficas estudiadas fue diferente de acuerdo a la propiedad de estabilidad considerada (Figura 3).
+
+En términos generales, es decir sin tener en cuenta el tipo de ecosistema, la relación complejidad-modularidad fue negativa, donde redes con mayor conectividad presentaron valores de modularidad relativamente más bajos.
+Para el caso de la relación complejidad-índice QSS, las líneas de regresión mostraron diferentes pendientes como consecuencia de una amplia dispersión en los valores del índice. Las regresiones lineales de los cuantiles 50 y 25 del índice mostraron pendientes hacia valores de mayor estabilidad (i.e. más cercanos a cero) a medida que aumentaba la complejidad. Sin embargo, la regresión del cuantil 75, que representa a redes tróficas relativamente más estables, presentó un comportamiento uniforme a lo largo del eje de variación de complejidad.
+
+Al considerar el tipo de ecosistema, 'dulceacuícola', 'marino' y 'terrestre', la relación complejidad-estabilidad fue similar y negativa cuando consideramos la modularidad como propiedad de estabilidad (Figura 4, panel superior). Por otro lado, la relación complejidad-índice QSS presentó distintas tendencias y diferencias significativas entre los ecosistemas dulceacuícola y marino (prueba pareada, $p$ < 0.001). Las redes tróficas de ecosistemas dulceacuícolas presentaron una tendencia negativa, donde redes más complejas fueron menos estables; mientras que las redes marinas más complejas mostraron mayor estabilidad (índice QSS más cercano a cero) (Figura 4, panel inferior).
+
+
+# Discusión
+
+La búsqueda de similitudes y diferencias entre ecosistemas ha dado lugar al conocimiento de algunos de los más informativos patrones y procesos de la ecología [@Shurin2005]. Sin embargo, es a partir de las últimas décadas donde comparasiones directas y cuantitativas se han empezado a realizar como consecuencia de la disponibilidad de grandes bases de datos [@Allesina2008; @Marina2018a; @Brose2019]. En este trabajo describimos, por primera vez, la multidimensionalidad de la estabilidad y la relación complejidad-estabilidad utilizando una base de datos de más de 300 redes tróficas empíricas cubriendo un rango amplio de complejidad en distintos tipos de ecosistemas.
+
+## Estabilidad
+
+Nuestros resultados muestran que la estabilidad de las redes tróficas varía según el ecosistema. Las redes tróficas terrestres y marinas son distintas considerando no solo indicadores indirectos (modularidad) sino también directos de estabilidad (índice QSS). En este sentido, existen diferencias importantes entre las redes acuáticas en general (dulceacuícola + marina) y las terrestres. Los ecosistemas acuáticos y terrestres son contrastantes en sus procesos biológicos y ecológicos, como la tasa de crecimiento de los productores primarios [@Cebrian2004], la incidencia de características de las especies (tamaño corporal) en las interacciones presa-depredador [@Yodzis1992] y el flujo de energía [@Nowlin2008].
+
+El acoplamiento de hábitats y el subsidio de energía diferencial podrían explicar que las redes tróficas acuáticas sean relativamente más estables (índice QSS más cercano a cero) que las terrestres. En general, los ecosistemas acuáticos reciben más subdsidios de recursos alóctonos (tanto orgánicos como inorgánicos) que los terrestres [@Pace2004; @Rodriguez-Florez2023]. En particular la materia orgánica o detrito sustenta altos niveles de producción secundaria, generando así una comunidad diversa de especies detritívoras. Dichas especies acumulan menos biomasa y son más eficientes en el reciclado de materia en los ecosistemas acuáticos que en los terrestres [@Cebrian2004a; @Cebrian2004]. Estas diferencias en la estructura y funcionamiento trófico podrían sustentar redes tróficas acuáticas más estables en comparasión con las terrestres.
+
+## Relación complejidad-estabilidad
+
+Este trabajo muestra que la relación complejidad-estabilidad varía de acuerdo al indicador de estabilidad considerado y según el tipo de ecosistema evaluado.
+
+El debate complejidad-estabilidad en redes tróficas, que se originó a partir del trabajo de @May1973, ha generado una vasta cantidad de trabajos de investigación teóricos y empíricos. Existen tantas investigaciones que sugieren una relación negativa entre complejidad y estabilidad, como investigaciones que sugieren lo contrario (ver tabla 4 en @Landi2018a). Esto se basa en la diversidad de indicadores de complejidad utilizados (e.g. número de especies, conectividad), pero sobre todo en los referidos a la estabilidad debido a su naturaleza multidimensional [@Donohue2016; @Dominguez-Garcia2019]. Nuestros resultados no escapan a esta realidad, ya que describen una relación claramente negativa entre complejidad y estabilidad al considerar la modularidad como indicador, y relaciones positivas y uniformes con respecto al índice QSS.
+
+La relación negativa entre complejidad y modularidad que encontramos no solo a nivel general, sino para cada uno de los tipos de ecosistema confirma lo sugerido originalmente y de manera teórica por @May1973. Las redes tróficas empíricas de menor conectividad, propiedad utilizada para describir la complejidad, suelen representar ecosistemas naturales grandes, donde la estructura de las redes es la de subgrupos de especies más conectados entre sí que con el resto de las especies, incrementando así la modularidad [@Kortsch2015; @Frelat2022; @Rodriguez2022]. Por otro lado, la baja modularidad en redes tróficas empíricas podría deberse a una alta proporción de especies generalistas y/u omnívoras observada en ecosistemas naturales [@Thompson2007; @Digel2014], donde las interacciones entre módulos reducirían la formación de subgrupos.
+
+El indicador de estabilidad QSS es un índice relativamente novedoso [@Allesina2008]; de hecho esta es la primera vez que es utilizado en una base grande de datos empíricos. Nuestros resultados plantean diferencias en la relación complejidad-estabilidad de acuerdo a la estabilidad relativa de las redes tróficas. Redes relativamente menos estables aumentarían su estabilidad con la complejidad, describiendo una relación complejidad-estabilidad positiva. Esto sugiere que en este tipo de redes, la complejidad (conectividad) aumentaría la robustez y actuaría previniendo el colapso frente a perturbaciones (extinciones de especies) [@Dunne2009; @Gilbert2009]. Esta relación positiva parecería ser propia de redes tróficas de ecosistemas marinos.
+Por otro lado, nuestros resultados sugieren que redes más estables son invariantes a variaciones en la complejidad, estableciendo una relación complejidad-estabilidad uniforme. Esta ausencia de relación fue propuesta originalmente por @Jacquet2016 luego de analizar 116 redes tróficas empíricas cuantitativas, es decir considerando la fuerza de interacción. Los autores hipotetizan que la mayoría de las redes estudiadas tienen un control 'top-down' y que la fuerza de interacción intraespecífica es insignificante con respecto a la interespecífica, lo que promovería la ausencia de relación. Asimismo, concluyen que la organización energética intrínseca es un factor estabilizante que permite que ecosistemas complejos se recuperen luego de una perturbación.
+Nuestro trabajo confirma dicho patrón extendiéndolo a redes cualitativas, donde solo la presencia-ausencia de la interacción (topología) es analizada. Esta relación uniforme parecería ser propia de redes tróficas de ecosistemas terrestres.
+
+La relación complejidad-estabilidad (índice QSS) claramente negativa en redes tróficas dulceacuícolas es opuesta a la de sus pares marinas y terrestres. Sin embargo, sigue el patrón descripto cuando se considera la modularidad como indicador de estabilidad. Aquí la alta proporción de especies generalistas y omnívoras tendrían un rol particularmente crucial en la estabilidad de las redes de ecosistemas de agua dulce [@Thompson2012; @Blanchette2014].
+
+
+# Conclusiones
+
+Nuestros resultados muestran que es fundamental considerar el tipo de ecosistema al evaluar la estabilidad y la relación complejidad-estabilidad en redes tróficas. En este trabajo demostramos que redes de diferentes ecosistemas (dulceacuícola vs marino) pueden presentar relaciones opuestas.
+De la misma manera, enfatizamos que abordar la estabilidad en sus múltiples dimensiones (resiliencia, resistencia), así como las distintas relaciones con la complejidad, es esencial para comprender el impacto real de cambios antropogénicos y ambientales en ecosistemas complejos.
+
+
+# Agradecimientos
+
+Agradecemos a la institución educativa School for International Training (SIT) y al programa "People, Environment, and Climate Change in Patagonia and Antarctica", marco en el cual NC desarrolló la presente investigación bajo la tutoría de TIM. También agradecemos al Centro Austral de Investigaciones Científicas (CADIC-CONICET) por dar el espacio físico para tal fin.
+
+\newpage
+```{r fig1, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=4.5, fig.cap="Ubicación geográfica de las redes tróficas empíricas analizadas y tipo de ecosistema al que pertenecen (dulceacuícola = 81, marino = 160, terrestre = 73)."}
+
+# Datos
+load("../Resultados/all_res.rda")
+load("../Data/metadata.rda")
+
+# Descartar redes con 2 componentes
+fw_2_comp <- prop_comp %>% 
+  filter(., Components == 2) %>% 
+  dplyr::select(Network, Components)
+fw_2_disc <- pull(fw_2_comp, Network)
+all_meta_ok <- all_meta %>% 
+  filter(!Network %in% c(fw_2_disc))
+
+# Mapa
+cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
+world <- map_data("world")
+ggplot() +
+  geom_map(data = world, map = world, aes(long, lat, map_id = region),
+    color = "black", fill = "lightgray", size = 0.1) +
+  geom_point(data = all_meta_ok,
+    aes(Longitude, Latitude, color = factor(Ecosystem)), alpha = 0.7) +
+  scale_color_manual(values=cols) +
+  labs(x = "Longitud", y = "Latitud", color = "Ecosistema") +
+  theme(panel.background = element_blank(),
+        legend.position = "top",
+        legend.key=element_rect(fill='white'))
+
+```
+
+\newpage
+```{r fig2, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Modularidad e índice QSS según el tipo de ecosistema. Cada punto representa una red trófica. En el diagrama de cajas y bigotes, la altura de la caja representa el intercuartil 25-75, la línea horizontal la mediana y las líneas verticales superior e inferior los percentiles 95 y 5, respectivamente."}
+
+# Datos
+load("../Resultados/all_res.rda")
+load("../Data/metadata.rda")
+## Descartar redes c/2 componentes de metadata
+all_meta_ok <- all_meta %>% 
+  filter(!Network %in% c(fw_2_disc)) %>% 
+  dplyr::select(Ecosystem)
+all_data <- cbind(all_res, all_meta_ok) %>% 
+  dplyr::select(Network, Ecosystem, everything())
+
+cols <- c("Dulceacuícola"="#D55E00", "Marino"="#0072B2", "Terrestre"="#009E73")
+
+## Modularidad
+bx_mod_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = Modularity)) +
+  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
+  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
+  scale_fill_manual(values=cols) +
+  scale_color_manual(values=cols) +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Modularidad") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+## QSS
+bx_qss_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = QSS_MEing)) +
+  geom_boxplot(aes(color = factor(Ecosystem), fill = factor(Ecosystem)), alpha=0.1) +
+  geom_jitter(size=0.3, aes(color = factor(Ecosystem), fill = factor(Ecosystem))) +
+  scale_fill_manual(values=cols) +
+  scale_color_manual(values=cols) +
+  scale_y_reverse() +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Índice QSS") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+# Figura
+fig_box <- ggarrange(bx_mod_eco + rremove("x.title"), bx_qss_eco + rremove("x.title"),
+          nrow = 2)
+annotate_figure(fig_box, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
+
+```
+
+\newpage
+```{r fig3, echo=FALSE, fig.align='center', fig.width = 6.5, fig.height = 4, fig.cap="Relación entre complejidad y (A) modularidad e (B) índice QSS en redes tróficas empíricas. Cada punto representa una red trófica. Regresión lineal para modularidad ($y = 0.40 - 1.2x, R^2 = 0.50, p-value < 2.16e-16$) e índice QSS ($y = 3.86 - 4.2x, R^2 < 0.01, p-value = 0.09$). En (B) la relación complejidad-QSS se muestran las regresiones de cuantiles 25 y 75."}
+
+# Regresión lineal
+## Modularidad
+reg_mod_gral <- all_data %>% 
+  ggplot(aes(x = Connectance, y = Modularity)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Complejidad", y = "Modularidad") +
+  theme_classic() +
+  theme(axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10))
+
+## QSS
+reg_qss_gral <- all_data %>% 
+  ggplot(aes(x = Connectance, y = QSS_MEing)) +
+  geom_point() +
+  scale_y_reverse() +
+  # geom_smooth(method = "lm") +
+  labs(x = "Complejidad", y = "Índice QSS") +
+  theme_classic() +
+  theme(axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10))
+reg_qss_q <- reg_qss_gral + 
+  geom_quantile(quantiles = c(0.25, 0.5, 0.75))
+
+# Figura
+fig_2 <- ggarrange(reg_mod_gral + rremove("x.title"), reg_qss_q + rremove("x.title"),
+                     ncol = 2, labels = c("A","B"))
+annotate_figure(fig_2, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
+
+```
+
+\newpage
+```{r fig4, echo=FALSE, fig.align='center', fig.width=6.5, fig.height=6, fig.cap="Relación complejidad-modularidad (panel superior) y complejidad-índice QSS (panel inferior) en redes tróficas empíricas según el tipo de ecosistema. Regresión lineal para redes dulceacuícolas (modularidad: $y = 0.4 - 1.3x, R^2 = 0.44, p-value < 0.001$; QSS: $y = - 0.13 - 18x, R^2 = 0.32, p-value < 0.001$), marinas (modularidad: $y = 0.38 - 1.1x, R^2 = 0.52, p-value < 0.001$; QSS: $y = - 3.5 - 6.8x, R^2 = 0.06, p-value < 0.002$) y terrestres (modularidad: $0.38 - 0.88x, R^2 = 0.24, p-value < 0.001$; QSS: $y = - 5.7 - 3x, R^2 < 0.01, p-value < 0.799$)."}
+
+## Modularidad
+reg_mod_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = Modularity)) +
+  geom_point(aes(color = factor(Ecosystem))) +
+  scale_color_manual(values=cols) +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Modularidad") +
+  geom_smooth(method = "lm", color = "grey25") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+## QSS
+reg_qss_eco <- all_data %>% 
+  ggplot(aes(x = Connectance, y = QSS_MEing)) +
+  geom_point(aes(color = factor(Ecosystem))) +
+  scale_color_manual(values=cols) +
+  scale_y_reverse() +
+  facet_wrap(~ Ecosystem) +
+  labs(x = "Complejidad", y = "Índice QSS") +
+  geom_smooth(method = "lm", color = "grey25") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(size = 12),
+        legend.position = "none")
+
+# Figura
+fig_qss <- ggarrange(reg_mod_eco + rremove("x.title"), reg_qss_eco + rremove("x.title"),
+                     nrow = 2)
+annotate_figure(fig_qss, bottom = textGrob("Complejidad", gp = gpar(cex = 1.1)))
+
+```
+
+
+# Literatura Citada
