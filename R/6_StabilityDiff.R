@@ -7,7 +7,7 @@
 ##
 # Cargar paquetes
 ##
-packages <- c("dplyr")
+packages <- c("dplyr","rcompanion")
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
@@ -50,10 +50,23 @@ mod_stat <- all_data %>%
     IQR = IQR(Modularity, na.rm = TRUE))
 
 # Kruskal-Wallis
-kruskal.test(Modularity ~ Ecosystem, data = all_data)
+KW_mod <- kruskal.test(Modularity ~ Ecosystem, data = all_data)
+## Size effect ----
+# Taken from https://rcompanion.org/handbook/F_04.html
+# 0.01 – < 0.08 small
+# 0.08 – < 0.26 medium
+# ≥ 0.26 large
+drop_f_m <- all_data %>% 
+  mutate(across(where(is.character), factor)) %>% 
+  filter(., Ecosystem != "Marino") %>% 
+  droplevels()
+str(drop_f_m)  # check dropped levels
+epsilonSquared(x = drop_f_m$Modularity, 
+               g = drop_f_m$Ecosystem)
+
 # Multiple pairwise-comparison
 pairwise.wilcox.test(all_data$Modularity, all_data$Ecosystem,
-                     p.adjust.method = "hommel")
+                     p.adjust.method = "bonf")
 
 
 ##
@@ -72,8 +85,19 @@ qss_stat <- all_data %>%
 
 # Kruskal-Wallis
 kruskal.test(QSS_MEing ~ Ecosystem, data = all_data)
+## Size effect ----
+# Taken from https://rcompanion.org/handbook/F_04.html
+# 0.01 – < 0.08 small
+# 0.08 – < 0.26 medium
+# ≥ 0.26 large
+drop_f_q <- all_data %>% 
+  mutate(across(where(is.character), factor)) %>% 
+  filter(., Ecosystem != "Marino") %>% 
+  droplevels()
+str(drop_f_q)  # check dropped levels
+epsilonSquared(x = drop_f_q$QSS_MEing, 
+               g = drop_f_q$Ecosystem)
+
 # Multiple pairwise-comparison
 pairwise.wilcox.test(all_data$QSS_MEing, all_data$Ecosystem,
                      p.adjust.method = "hommel")
-
-
