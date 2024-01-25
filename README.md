@@ -1,5 +1,7 @@
 # Relación complejidad-estabilidad en redes tróficas empíricas
 
+10.5281/zenodo.10569498
+
 Artículo de investigación publicado en la revista Anales del Instituto de la Patagonia.
 
 Título del artículo: Complejidad y estabilidad en redes tróficas: un análisis de redes empíricas. DOI: https://doi.org/10.22352/AIP202351007
