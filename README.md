@@ -1,6 +1,6 @@
 # Relación complejidad-estabilidad en redes tróficas empíricas
 
-[10.5281/zenodo.10569498](https://zenodo.org/badge/600043086.svg)
+<a href="https://zenodo.org/doi/10.5281/zenodo.10569497"><img src="https://zenodo.org/badge/600043086.svg" alt="DOI"></a>
 
 Artículo de investigación publicado en la revista Anales del Instituto de la Patagonia.
 
